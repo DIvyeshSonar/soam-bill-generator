@@ -98,6 +98,7 @@ function setupEventListeners() {
             let key = id.replace('invoice-', '').replace('-amount', '').replace('prev-', 'prev');
             if (id === 'customer-name') key = 'customerName';
             if (id === 'customer-email') key = 'customerEmail';
+            if (id === 'invoice-no') key = 'invoiceNo';
             if (id === 'received-amount') key = 'received';
             if (id === 'prev-balance') key = 'prevBalance';
 
