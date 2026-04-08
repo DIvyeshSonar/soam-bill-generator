@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tax Invoice Generator | Soam Light</title>
+    <link rel="stylesheet" href="index.css">
+    <!-- Google Fonts for premium typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Lucide Icons for modern UI -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+    <!-- Landing Page Overlay -->
+    <div id="landing-page" class="landing-page">
+        <div class="landing-content">
+            <img src="Screenshot_2026-03-23_145941-removebg-preview.png" alt="Soam Bill Generator" class="landing-image">
+            <h1 class="landing-title">Soam Bill Generator</h1>
+            <p class="landing-subtitle">Create professional tax invoices in seconds. Fast, seamless, and visually stunning.</p>
+            <button id="get-started-btn" class="landing-btn">
+                Get Started <i data-lucide="arrow-right"></i>
+            </button>
+        </div>
+        <div class="landing-background-shapes">
+            <div class="shape shape-1"></div>
+            <div class="shape shape-2"></div>
+            <div class="shape shape-3"></div>
+        </div>
+    </div>
+
+    <div class="app-container">
+        <!-- Sidebar for Settings & History -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <i data-lucide="zap" class="logo-icon"></i>
+                <h2>Soam Bill Gen</h2>
+            </div>
+            
+            <div class="settings-section">
+                <h3><i data-lucide="settings"></i> Company Settings</h3>
+                <div class="input-group">
+                    <label for="comp-name">Company Name</label>
+                    <input type="text" id="comp-name" placeholder="life energy">
+                </div>
+                <div class="input-group">
+                    <label for="comp-email">Company Email</label>
+                    <input type="text" id="comp-email" placeholder="lifeenergy@gmail.com">
+                </div>
+            </div>
+
+            <div class="history-section">
+                <h3><i data-lucide="history"></i> Recent Invoices</h3>
+                <div id="invoice-history" class="history-list">
+                    <!-- History items will be injected here -->
+                    <p class="empty-msg">No invoices saved yet.</p>
+                </div>
+            </div>
+
+            <div class="sidebar-footer">
+                <button id="new-invoice-btn" class="secondary-btn">
+                    <i data-lucide="plus-circle"></i> New Invoice
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Scrollable Form Side -->
+            <div class="form-section">
+                <header class="section-header">
+                    <h1>Create Invoice</h1>
+                    <div class="header-actions">
+                        <button id="save-invoice-btn" class="primary-btn">
+                            <i data-lucide="save"></i> Save Bill
+                        </button>
+                        <button id="print-bill-btn" class="accent-btn">
+                            <i data-lucide="printer"></i> Print / PDF
+                        </button>
+                    </div>
+                </header>
+
+                <!-- Bill To Details -->
+                <div class="card">
+                    <h3><i data-lucide="user"></i> Bill To</h3>
+                    <div class="input-group">
+                        <label for="customer-name">Customer Name</label>
+                        <input type="text" id="customer-name" placeholder="Enter customer name">
+                    </div>
+                    <div class="input-group">
+                        <label for="customer-email">Email Address</label>
+                        <input type="email" id="customer-email" placeholder="customer@example.com">
+                    </div>
+                </div>
+
+                <!-- Invoice Details -->
+                <div class="card">
+                    <h3><i data-lucide="file-text"></i> Invoice Details</h3>
+                    <div class="input-row">
+                        <div class="input-group">
+                            <label for="invoice-no">Invoice No.</label>
+                            <input type="number" id="invoice-no" placeholder="1852">
+                        </div>
+                        <div class="input-group">
+                            <label for="invoice-date">Date</label>
+                            <input type="date" id="invoice-date">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Items Table -->
+                <!-- Modern Item Entry Area -->
+                <div class="card items-card">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+                        <h3 style="margin: 0; display: flex; align-items: center; gap: 10px;">
+                            <i data-lucide="shopping-bag" style="color: var(--primary);"></i> Items & Services
+                        </h3>
+                        <button id="add-item-btn" class="primary-btn" style="padding: 8px 16px; font-size: 13px;">
+                            <i data-lucide="plus"></i> Add Item
+                        </button>
+                    </div>
+
+                    <div id="items-container" class="items-container">
+                        <!-- Item Cards will be injected here -->
+                    </div>
+                </div>
+
+                <!-- Totals & Balances -->
+                <div class="card">
+                    <div class="totals-grid">
+                        <div class="advanced-section">
+                            <div class="input-group">
+                                <label for="invoice-terms">Terms & Conditions</label>
+                                <textarea id="invoice-terms" rows="3">Thank you for doing business with us.</textarea>
+                            </div>
+                            <div class="input-row">
+                                <div class="input-group">
+                                    <label for="received-amount">Received (₹)</label>
+                                    <input type="number" id="received-amount" placeholder="0.00">
+                                </div>
+                                <div class="input-group">
+                                    <label for="prev-balance">Prev. Balance (₹)</label>
+                                    <input type="number" id="prev-balance" placeholder="0.00">
+                                </div>
+                            </div>
+                            <div class="input-row" style="margin-top: 10px;">
+                                <div class="input-group">
+                                    <label for="cgst-rate">CGST Rate (%)</label>
+                                    <input type="number" id="cgst-rate" value="9" step="0.5">
+                                </div>
+                                <div class="input-group">
+                                    <label for="sgst-rate">SGST Rate (%)</label>
+                                    <input type="number" id="sgst-rate" value="9" step="0.5">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="calculation-section">
+                            <div class="calc-row">
+                                <span>Sub Total</span>
+                                <span id="calc-subtotal">₹ 0.00</span>
+                            </div>
+                            <div class="calc-row">
+                                <span>CGST</span>
+                                <span id="calc-cgst">₹ 0.00</span>
+                            </div>
+                            <div class="calc-row">
+                                <span>SGST</span>
+                                <span id="calc-sgst">₹ 0.00</span>
+                            </div>
+                            <div class="calc-row highlighted">
+                                <span>Total Amount</span>
+                                <span id="calc-total">₹ 0.00</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Scalable Preview Side -->
+            <div class="preview-section">
+                <div class="invoice-paper-wrapper" id="preview-wrapper">
+                    <div id="invoice-preview" class="invoice-paper">
+                        <!-- Invoice generated by JS -->
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Script to initialize Lucide Icons and our App JS -->
+    <script>
+        lucide.createIcons();
+    </script>
+    <script src="app.js"></script>
+</body>
+</html>
