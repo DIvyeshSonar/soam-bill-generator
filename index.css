@@ -912,3 +912,197 @@ input:focus, textarea:focus {
     0% { transform: translate(0, 0) scale(1); }
     100% { transform: translate(5%, 5%) scale(1.1); }
 }
+
+/* --- Responsive Adjustments --- */
+
+.mobile-only-btn {
+    display: none;
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 8px;
+    color: var(--text-main);
+    cursor: pointer;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+
+.mobile-only-btn:hover {
+    background: #f8fafc;
+    border-color: var(--primary);
+    color: var(--primary);
+}
+
+.close-btn {
+    position: absolute;
+    right: 16px;
+    top: 24px;
+}
+
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.sidebar-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.4);
+    z-index: 1000;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(4px);
+}
+
+.sidebar-backdrop.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* Tablet Layout (1024px) */
+@media screen and (max-width: 1200px) {
+    .main-content {
+        grid-template-columns: 1fr;
+        overflow-y: auto;
+    }
+    
+    .form-section, .preview-section {
+        height: auto;
+        overflow: visible;
+    }
+
+    .preview-section {
+        border-left: none;
+        border-top: 1px solid var(--border);
+        padding: 40px 20px;
+    }
+
+    .invoice-paper-wrapper {
+        margin: 0 auto;
+    }
+}
+
+/* Mobile Layout (768px) */
+@media screen and (max-width: 768px) {
+    .app-container {
+        grid-template-columns: 1fr;
+    }
+
+    .sidebar {
+        position: fixed;
+        left: -300px;
+        top: 0;
+        bottom: 0;
+        width: 280px;
+        z-index: 1001;
+        transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: 20px 0 50px rgba(0,0,0,0.1);
+        background: #ffffff;
+    }
+
+    .sidebar.active {
+        left: 0;
+    }
+
+    .mobile-only-btn {
+        display: flex;
+    }
+
+    .section-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 16px;
+    }
+
+    .header-actions {
+        width: 100%;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+    }
+
+    .header-actions button {
+        width: 100%;
+        justify-content: center;
+        padding: 12px;
+    }
+
+    .form-section {
+        padding: 20px 16px;
+    }
+
+    .card {
+        padding: 24px 16px;
+    }
+
+    .input-row {
+        grid-template-columns: 1fr;
+    }
+
+    /* Stack items better on mobile */
+    .item-row-top {
+        grid-template-columns: 32px 1fr 32px;
+    }
+
+    .item-row-bottom {
+        grid-template-columns: 1fr 1fr;
+        gap: 12px 16px;
+    }
+
+    .item-row-bottom .input-label-group:nth-child(1) { grid-column: span 2; } /* HSN */
+    .item-row-bottom .input-label-group:nth-child(5) { grid-column: span 2; } /* Amount */
+
+    .totals-grid {
+        flex-direction: column;
+        gap: 24px;
+    }
+
+    .advanced-section {
+        width: 100%;
+        min-width: auto;
+    }
+
+    .calculation-section {
+        width: 100%;
+        flex: none;
+        border-top: 2px dashed var(--border);
+        padding-top: 24px;
+    }
+
+    /* Landing Page Mobile Fixes */
+    .landing-title {
+        font-size: 36px;
+        line-height: 1.2;
+    }
+
+    .landing-subtitle {
+        font-size: 16px;
+        margin-bottom: 30px;
+    }
+
+    .landing-image {
+        max-width: 180px;
+        margin-bottom: 20px;
+    }
+}
+
+/* Small Mobile (480px) */
+@media screen and (max-width: 480px) {
+    .header-actions {
+        grid-template-columns: 1fr;
+    }
+
+    .card h3 {
+        font-size: 16px;
+    }
+
+    .calc-row.highlighted {
+        font-size: 18px;
+    }
+}

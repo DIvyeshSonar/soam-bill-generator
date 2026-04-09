@@ -34,8 +34,13 @@
         <!-- Sidebar for Settings & History -->
         <aside class="sidebar">
             <div class="sidebar-header">
-                <i data-lucide="zap" class="logo-icon"></i>
-                <h2>Soam Bill Gen</h2>
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <i data-lucide="zap" class="logo-icon"></i>
+                    <h2>Soam Bill Gen</h2>
+                </div>
+                <button id="close-sidebar-btn" class="mobile-only-btn close-btn">
+                    <i data-lucide="x"></i>
+                </button>
             </div>
             
             <div class="settings-section">
@@ -70,7 +75,12 @@
             <!-- Scrollable Form Side -->
             <div class="form-section">
                 <header class="section-header">
-                    <h1>Create Invoice</h1>
+                    <div class="header-left">
+                        <button id="mobile-menu-btn" class="mobile-only-btn">
+                            <i data-lucide="menu"></i>
+                        </button>
+                        <h1>Create Invoice</h1>
+                    </div>
                     <div class="header-actions">
                         <button id="save-invoice-btn" class="primary-btn">
                             <i data-lucide="save"></i> Save Bill
@@ -187,6 +197,9 @@
             </div>
         </main>
     </div>
+    
+    <!-- Sidebar Backdrop for Mobile -->
+    <div id="sidebar-backdrop" class="sidebar-backdrop"></div>
 
     <!-- Script to initialize Lucide Icons and our App JS -->
     <script>

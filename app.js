@@ -133,9 +133,33 @@ function setupEventListeners() {
 
     // Scaling listener
     window.addEventListener('resize', updatePreviewScale);
+
+    // Mobile Menu Toggle
+    const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+    const closeSidebarBtn = document.getElementById('close-sidebar-btn');
+    const sidebar = document.querySelector('.sidebar');
+    const backdrop = document.getElementById('sidebar-backdrop');
+
+    const toggleSidebar = () => {
+        sidebar.classList.toggle('active');
+        backdrop.classList.toggle('active');
+    };
+
+    if (mobileMenuBtn) mobileMenuBtn.addEventListener('click', toggleSidebar);
+    if (closeSidebarBtn) closeSidebarBtn.addEventListener('click', toggleSidebar);
+    if (backdrop) backdrop.addEventListener('click', toggleSidebar);
+
+    // Close sidebar on item selection (for history)
+    historyList.addEventListener('click', (e) => {
+        if (window.innerWidth <= 768) {
+            if (e.target.closest('.history-item')) {
+                toggleSidebar();
+            }
+        }
+    });
 }
 
-function addItemRow() {
+function addItemRow(itemData = null) {
     const container = document.getElementById('items-container');
     if (!container) return;
 
@@ -171,10 +195,19 @@ function addItemRow() {
             </div>
             <div class="input-label-group" style="text-align: right;">
                 <label>Amount</label>
-                <div class="item-amount-display">₹ 0.00</div>
+                <div class="item-amount-display">₹ ${(itemData ? itemData.amount : 0).toFixed(2)}</div>
             </div>
         </div>
     `;
+
+    if (itemData) {
+        card.querySelector('.item-name').value = itemData.name || '';
+        card.querySelector('.item-hsn').value = itemData.hsn || '';
+        card.querySelector('.item-qty').value = itemData.qty || 1;
+        card.querySelector('.item-unit').value = itemData.unit || 'Pcs';
+        card.querySelector('.item-price').value = itemData.price || 0;
+    }
+
     container.appendChild(card);
     lucide.createIcons();
     updatePreview();
@@ -466,7 +499,11 @@ window.loadInvoice = function (id) {
     document.getElementById('sgst-rate').value = inv.sgstRate || 9;
 
     itemsContainer.innerHTML = '';
-    inv.items.forEach(item => addItemRow(item));
+    if (inv.items && inv.items.length > 0) {
+        inv.items.forEach(item => addItemRow(item));
+    } else {
+        addItemRow();
+    }
 
     updatePreview();
 };
