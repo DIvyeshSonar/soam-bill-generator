@@ -54,13 +54,57 @@ h1, h2, h3, .logo-icon {
     position: sticky;
     top: 0;
     height: 100vh;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 100;
+}
+
+.app-container.sidebar-collapsed {
+    grid-template-columns: 0 1fr;
+}
+
+.app-container.sidebar-collapsed .sidebar {
+    transform: translateX(-100%);
+}
+
+.app-container.sidebar-collapsed .sidebar-header h2,
+.app-container.sidebar-collapsed .sidebar-header .logo-icon {
+    opacity: 0;
+}
+
+/* Floating toggle when sidebar is collapsed */
+.app-container.sidebar-collapsed #toggle-sidebar-btn {
+    position: fixed;
+    left: 20px;
+    top: 20px;
+    z-index: 200;
+    transform: rotate(180deg);
 }
 
 .sidebar-header {
     display: flex;
     align-items: center;
+    justify-content: space-between;
     gap: 12px;
     padding-bottom: 20px;
+}
+
+.toggle-btn {
+    background: #f1f5f9;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 6px;
+    cursor: pointer;
+    color: var(--text-muted);
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.toggle-btn:hover {
+    background: var(--primary);
+    color: white;
+    border-color: var(--primary);
 }
 
 .sidebar-tabs {

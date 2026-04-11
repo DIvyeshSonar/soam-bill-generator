@@ -156,6 +156,18 @@ function setupEventListeners() {
     if (closeSidebarBtn) closeSidebarBtn.addEventListener('click', toggleSidebar);
     if (backdrop) backdrop.addEventListener('click', toggleSidebar);
 
+    // Desktop Sidebar Toggle
+    const toggleSidebarBtn = document.getElementById('toggle-sidebar-btn');
+    const appContainer = document.querySelector('.app-container');
+
+    if (toggleSidebarBtn) {
+        toggleSidebarBtn.addEventListener('click', () => {
+            appContainer.classList.toggle('sidebar-collapsed');
+            // Update icons if necessary
+            setTimeout(updatePreviewScale, 400); // Re-scale preview after sidebar animation
+        });
+    }
+
     // Tab Switching Logic
     const tabHistory = document.getElementById('tab-history');
     const tabSettings = document.getElementById('tab-settings');
