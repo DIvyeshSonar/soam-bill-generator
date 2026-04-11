@@ -1,21 +1,23 @@
 :root {
-    --primary: #FF6B00; /* More vibrant orange */
+    --primary: #FF6B00; 
     --primary-light: #FF8A33;
     --primary-dark: #cc5600;
-    --accent: #2D3436;
-    --bg-app: #f0f2f5;
-    --bg-sidebar: rgba(255, 255, 255, 0.85); /* For glassmorphism */
+    --midnight: #0F172A;
+    --slate: #1E293B;
+    --bg-app: #f1f5f9;
+    --bg-page: #0F172A;
+    --bg-sidebar: rgba(255, 255, 255, 0.8);
     --bg-card: #ffffff;
-    --text-main: #1A1D1E;
+    --text-main: #1E293B;
     --text-muted: #64748B;
     --border: #E2E8F0;
     --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-    --shadow-premium: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-    --radius: 16px;
-    --radius-sm: 8px;
-    --glass-blur: 12px;
+    --shadow-md: 0 10px 15px -3px rgba(15, 23, 42, 0.08), 0 4px 6px -2px rgba(15, 23, 42, 0.05);
+    --shadow-lg: 0 20px 25px -5px rgba(15, 23, 42, 0.1), 0 10px 10px -5px rgba(15, 23, 42, 0.04);
+    --shadow-premium: 0 25px 50px -12px rgba(15, 23, 42, 0.15);
+    --radius: 20px;
+    --radius-sm: 12px;
+    --glass-blur: 16px;
 }
 
 * {
@@ -45,8 +47,10 @@ h1, h2, h3, .logo-icon {
 
 /* Sidebar Styling */
 .sidebar {
-    background: #ffffff;
-    border-right: 1px solid var(--border);
+    background: var(--bg-sidebar);
+    backdrop-filter: blur(var(--glass-blur));
+    -webkit-backdrop-filter: blur(var(--glass-blur));
+    border-right: 1px solid rgba(226, 232, 240, 0.8);
     padding: 32px 24px;
     display: flex;
     flex-direction: column;
@@ -495,9 +499,9 @@ h1, h2, h3, .logo-icon {
     background: var(--bg-card);
     border-radius: var(--radius);
     padding: 32px;
-    border: 1px solid var(--border);
+    border: 1px solid rgba(226, 232, 240, 0.5);
     box-shadow: var(--shadow-md);
-    transition: transform 0.2s, box-shadow 0.2s;
+    transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
 }
 
 .card:hover {
@@ -919,16 +923,17 @@ input:focus, textarea:focus {
     left: 0;
     width: 100vw;
     height: 100vh;
-    background: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%);
+    background: #0F172A; /* Deep Midnight */
     z-index: 9999;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.6s;
+    transition: all 0.8s cubic-bezier(0.85, 0, 0.15, 1);
     overflow: hidden;
 }
 
 .landing-page.hidden {
+    transform: translateY(-100%);
     opacity: 0;
     visibility: hidden;
     pointer-events: none;
@@ -941,98 +946,123 @@ input:focus, textarea:focus {
     display: flex;
     flex-direction: column;
     align-items: center;
-    animation: fadeUp 0.8s ease-out forwards;
-    padding: 0 20px;
+    padding: 0 40px;
 }
 
 .landing-image {
-    max-width: 250px;
+    max-width: 220px;
     height: auto;
-    margin-bottom: 30px;
-    filter: drop-shadow(0 20px 30px rgba(255, 107, 0, 0.2));
+    margin-bottom: 40px;
+    filter: drop-shadow(0 0 30px rgba(255, 107, 0, 0.3));
     animation: float 6s ease-in-out infinite;
 }
 
+.landing-text-reveal {
+    opacity: 0;
+    transform: translateY(30px);
+    animation: fadeInUp 1s cubic-bezier(0.2, 0.8, 0.2, 1) forwards 0.5s;
+}
+
 .landing-title {
-    font-size: 48px;
+    font-size: 64px;
     font-weight: 800;
-    color: var(--text-main);
+    color: #ffffff;
     margin-bottom: 16px;
-    letter-spacing: -1px;
+    letter-spacing: -2px;
+    line-height: 1.1;
 }
 
 .landing-subtitle {
-    font-size: 18px;
-    color: var(--text-muted);
-    max-width: 500px;
-    margin-bottom: 40px;
+    font-size: 20px;
+    color: rgba(255,255,255,0.7);
+    max-width: 550px;
+    margin-bottom: 48px;
     line-height: 1.6;
+    font-weight: 400;
 }
 
 .landing-btn {
-    background: linear-gradient(135deg, var(--primary) 0%, #ff4757 100%);
+    background: linear-gradient(135deg, var(--primary) 0%, #ff832b 100%);
     color: white;
-    font-size: 18px;
-    font-weight: 600;
-    padding: 16px 40px;
-    border-radius: 50px;
+    font-size: 19px;
+    font-weight: 700;
+    padding: 18px 48px;
+    border-radius: 100px;
     border: none;
     cursor: pointer;
     display: flex;
     align-items: center;
-    gap: 12px;
-    box-shadow: 0 10px 25px -5px rgba(255, 107, 0, 0.4);
-    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    gap: 14px;
+    box-shadow: 0 20px 40px -10px rgba(255, 107, 0, 0.5);
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
 .landing-btn:hover {
-    transform: translateY(-4px) scale(1.02);
-    box-shadow: 0 20px 35px -10px rgba(255, 107, 0, 0.6);
+    transform: translateY(-5px) scale(1.05);
+    box-shadow: 0 30px 60px -12px rgba(255, 107, 0, 0.6);
 }
 
-/* Background Shapes */
+/* Background Shapes (Mesh Gradient Effect) */
 .landing-background-shapes {
     position: absolute;
-    top: 0;
-    left: 0;
     width: 100%;
     height: 100%;
-    overflow: hidden;
     z-index: 1;
 }
 
 .shape {
     position: absolute;
     border-radius: 50%;
-    filter: blur(80px);
-    opacity: 0.5;
+    filter: blur(120px);
+    opacity: 0.4;
 }
 
 .shape-1 {
     top: -10%;
-    right: -5%;
-    width: 50vw;
-    height: 50vw;
-    background: rgba(255, 107, 0, 0.15);
-    animation: drift 15s infinite alternate ease-in-out;
+    right: -10%;
+    width: 60vw;
+    height: 60vw;
+    background: rgba(255, 107, 0, 0.2);
+    animation: bounce 25s infinite alternate;
 }
 
 .shape-2 {
     bottom: -20%;
     left: -10%;
-    width: 60vw;
-    height: 60vw;
-    background: rgba(255, 71, 87, 0.1);
-    animation: drift 20s infinite alternate-reverse ease-in-out;
+    width: 70vw;
+    height: 70vw;
+    background: rgba(15, 101, 255, 0.15);
+    animation: bounce 30s infinite alternate-reverse;
 }
 
 .shape-3 {
-    top: 40%;
-    left: 20%;
-    width: 30vw;
-    height: 30vw;
-    background: rgba(45, 52, 54, 0.05);
-    animation: float 10s infinite alternate ease-in-out;
+    top: 20%;
+    left: 10%;
+    width: 40vw;
+    height: 40vw;
+    background: rgba(255, 107, 0, 0.1);
+    animation: bounce 20s infinite alternate;
+}
+
+.shape-4 {
+    bottom: 20%;
+    right: 15%;
+    width: 35vw;
+    height: 35vw;
+    background: rgba(147, 51, 234, 0.1);
+    animation: bounce 22s infinite alternate-reverse;
+}
+
+@keyframes bounce {
+    0% { transform: translate(0, 0) scale(1); }
+    100% { transform: translate(10%, 10%) scale(1.2); }
+}
+
+@keyframes fadeInUp {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 @keyframes fadeUp {
