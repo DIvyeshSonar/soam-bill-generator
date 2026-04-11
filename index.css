@@ -75,19 +75,19 @@ h1, h2, h3, .logo-icon {
     pointer-events: none;
 }
 
-/* Floating toggle when sidebar is collapsed */
-.app-container.sidebar-collapsed #toggle-sidebar-btn {
-    position: fixed;
-    left: 20px;
-    top: 24px;
-    z-index: 2000;
+/* Toggle button rotation when sidebar is collapsed */
+.app-container.sidebar-collapsed #toggle-sidebar-btn i {
     transform: rotate(180deg);
-    background: white;
-    box-shadow: var(--shadow-md);
-    padding: 8px;
-    width: 36px;
-    height: 36px;
-    pointer-events: auto;
+}
+
+.desktop-only-btn {
+    display: flex;
+}
+
+@media screen and (max-width: 768px) {
+    .desktop-only-btn {
+        display: none !important;
+    }
 }
 
 .sidebar-header {
@@ -99,22 +99,28 @@ h1, h2, h3, .logo-icon {
 }
 
 .toggle-btn {
-    background: #f1f5f9;
-    border: 1px solid var(--border);
+    background: #ffffff;
+    border: 1.5px solid var(--border);
     border-radius: 8px;
-    padding: 6px;
+    padding: 8px;
     cursor: pointer;
     color: var(--text-muted);
-    transition: all 0.2s;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     display: flex;
     align-items: center;
     justify-content: center;
+    box-shadow: var(--shadow-sm);
+}
+
+.toggle-btn i {
+    transition: transform 0.3s ease;
 }
 
 .toggle-btn:hover {
     background: var(--primary);
     color: white;
     border-color: var(--primary);
+    box-shadow: var(--shadow-md);
 }
 
 .sidebar-tabs {
