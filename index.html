@@ -44,7 +44,16 @@
                 </button>
             </div>
             
-            <div class="settings-section">
+            <div class="sidebar-tabs">
+                <button id="tab-history" class="tab-btn active" data-tab="history">
+                    <i data-lucide="history"></i> History
+                </button>
+                <button id="tab-settings" class="tab-btn" data-tab="settings">
+                    <i data-lucide="settings"></i> Settings
+                </button>
+            </div>
+            
+            <div id="section-settings" class="settings-section hidden">
                 <h3><i data-lucide="settings"></i> Company Settings</h3>
                 <div class="input-group">
                     <label for="comp-name">Company Name</label>
@@ -60,7 +69,7 @@
                 </div>
             </div>
 
-            <div class="history-section">
+            <div id="section-history" class="history-section">
                 <h3><i data-lucide="history"></i> Recent Invoices</h3>
                 <div id="invoice-history" class="history-list">
                     <!-- History items will be injected here -->

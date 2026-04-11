@@ -156,6 +156,29 @@ function setupEventListeners() {
     if (closeSidebarBtn) closeSidebarBtn.addEventListener('click', toggleSidebar);
     if (backdrop) backdrop.addEventListener('click', toggleSidebar);
 
+    // Tab Switching Logic
+    const tabHistory = document.getElementById('tab-history');
+    const tabSettings = document.getElementById('tab-settings');
+    const sectionHistory = document.getElementById('section-history');
+    const sectionSettings = document.getElementById('section-settings');
+
+    const switchTab = (tabName) => {
+        if (tabName === 'history') {
+            tabHistory.classList.add('active');
+            tabSettings.classList.remove('active');
+            sectionHistory.classList.remove('hidden');
+            sectionSettings.classList.add('hidden');
+        } else {
+            tabHistory.classList.remove('active');
+            tabSettings.classList.add('active');
+            sectionHistory.classList.add('hidden');
+            sectionSettings.classList.remove('hidden');
+        }
+    };
+
+    if (tabHistory) tabHistory.addEventListener('click', () => switchTab('history'));
+    if (tabSettings) tabSettings.addEventListener('click', () => switchTab('settings'));
+
     // Close sidebar on item selection (for history)
     historyList.addEventListener('click', (e) => {
         if (window.innerWidth <= 768) {
@@ -448,9 +471,9 @@ function saveInvoice() {
         invoiceHistory.unshift({ ...currentInvoice });
     }
 
-    // Limit to 10
-    if (invoiceHistory.length > 10) {
-        invoiceHistory = invoiceHistory.slice(0, 10);
+    // Increased Limit to 100
+    if (invoiceHistory.length > 100) {
+        invoiceHistory = invoiceHistory.slice(0, 100);
     }
 
     localStorage.setItem('invoiceHistory', JSON.stringify(invoiceHistory));
@@ -466,9 +489,10 @@ function renderHistory() {
 
     historyList.innerHTML = invoiceHistory.map(inv => `
         <div class="history-item" onclick="loadInvoice(${inv.id})">
-            <div>
-                <div class="inv-no">#${inv.invoiceNo} - ${inv.customerName || 'No Name'}</div>
-                <div class="inv-date">${formatDate(inv.date)} - ${formatCurrency(inv.total)}</div>
+            <div style="flex: 1; overflow: hidden;">
+                <div class="inv-no">#${inv.invoiceNo}</div>
+                <div class="inv-customer">${inv.customerName || 'Walking Customer'}</div>
+                <div class="inv-meta">${formatDate(inv.date)} • ${formatCurrency(inv.total)}</div>
             </div>
             <button class="delete-inv-btn" onclick="event.stopPropagation(); deleteInvoice(${inv.id})">
                 <i data-lucide="trash-2" style="width: 14px; height: 14px;"></i>
