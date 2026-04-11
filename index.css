@@ -498,6 +498,7 @@ h1, h2, h3, .logo-icon {
     border: 1px solid var(--border);
     box-shadow: var(--shadow-md);
     transition: transform 0.2s, box-shadow 0.2s;
+    overflow-x: hidden; /* Prevent horizontal overflow from children */
 }
 
 .card:hover {
@@ -652,16 +653,20 @@ input:focus, textarea:focus {
 /* Totals Section */
 .totals-grid {
     display: grid;
-    grid-template-columns: 1.2fr 1fr;
+    grid-template-columns: 1fr 320px;
     gap: 32px;
     align-items: start;
     width: 100%;
 }
 
-@media screen and (max-width: 1200px) {
+@media screen and (max-width: 1400px) {
     .totals-grid {
         grid-template-columns: 1fr;
         gap: 24px;
+    }
+    
+    .calculation-section {
+        max-width: 100%;
     }
 }
 
