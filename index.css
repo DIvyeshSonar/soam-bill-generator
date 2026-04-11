@@ -923,7 +923,7 @@ input:focus, textarea:focus {
     left: 0;
     width: 100vw;
     height: 100vh;
-    background: #0F172A; /* Deep Midnight */
+    background: #ffffff; /* Clean White */
     z-index: 9999;
     display: flex;
     align-items: center;
@@ -966,7 +966,7 @@ input:focus, textarea:focus {
 .landing-title {
     font-size: 64px;
     font-weight: 800;
-    color: #ffffff;
+    color: #0F172A; /* Midnight Black for White BG */
     margin-bottom: 16px;
     letter-spacing: -2px;
     line-height: 1.1;
@@ -974,7 +974,7 @@ input:focus, textarea:focus {
 
 .landing-subtitle {
     font-size: 20px;
-    color: rgba(255,255,255,0.7);
+    color: #64748B; /* Slate Gray */
     max-width: 550px;
     margin-bottom: 48px;
     line-height: 1.6;
@@ -1014,7 +1014,7 @@ input:focus, textarea:focus {
     position: absolute;
     border-radius: 50%;
     filter: blur(120px);
-    opacity: 0.4;
+    opacity: 0.2; /* Lower opacity for White BG */
 }
 
 .shape-1 {
@@ -1022,7 +1022,7 @@ input:focus, textarea:focus {
     right: -10%;
     width: 60vw;
     height: 60vw;
-    background: rgba(255, 107, 0, 0.2);
+    background: rgba(255, 107, 0, 0.15);
     animation: bounce 25s infinite alternate;
 }
 
@@ -1031,7 +1031,7 @@ input:focus, textarea:focus {
     left: -10%;
     width: 70vw;
     height: 70vw;
-    background: rgba(15, 101, 255, 0.15);
+    background: rgba(15, 101, 255, 0.1);
     animation: bounce 30s infinite alternate-reverse;
 }
 
