@@ -483,12 +483,13 @@ h1, h2, h3, .logo-icon {
 }
 
 .accent-btn { 
-    background: var(--accent); 
+    background: #475569; /* Solid Slate Slate for visibility */
     color: white; 
 }
 .accent-btn:hover { 
-    background: #000; 
+    background: #1e293b; 
     transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
 }
 
 .text-btn { background: transparent; color: var(--primary); border: 1px solid var(--primary); }
@@ -961,6 +962,10 @@ input:focus, textarea:focus {
     opacity: 0;
     transform: translateY(30px);
     animation: fadeInUp 1s cubic-bezier(0.2, 0.8, 0.2, 1) forwards 0.5s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
 }
 
 .landing-title {
