@@ -106,22 +106,36 @@ async function connectCloudSync(id) {
     const statusEl = document.getElementById('sync-status');
     statusEl.innerHTML = `Status: <span style="color: #10b981; font-weight: 700;">Connected to Cloud (${id})</span>`;
     
+    // Migration: If we already have local history, upload it to cloud so it shows on laptop
+    if (invoiceHistory.length > 0) {
+        console.log("Cloud Sync: Migrating local history to Cloud...");
+        for (const inv of invoiceHistory) {
+            try {
+                const syncData = { ...inv, storeId: id, lastUpdated: Date.now() };
+                await setDoc(doc(db, "invoices", `${id}_${inv.id}`), syncData);
+            } catch (err) { console.error("Migration error:", err); }
+        }
+    }
+
     // Start listening for real-time updates
     const q = query(collection(db, "invoices"), where("storeId", "==", storeId));
     onSnapshot(q, (snapshot) => {
         const cloudInvoices = [];
         snapshot.forEach((doc) => {
-            cloudInvoices.push(doc.data());
+            const data = doc.data();
+            // Basic data validation
+            if (data && data.id) cloudInvoices.push(data);
         });
         
-        // Merge cloud data with local if needed, prioritizing cloud
+        // Only update if cloud has content (prevents clearing local list if cloud is slow)
         if (cloudInvoices.length > 0) {
+            // Sort by ID (descending)
             invoiceHistory = cloudInvoices.sort((a, b) => b.id - a.id);
             localStorage.setItem('invoiceHistory', JSON.stringify(invoiceHistory));
             renderHistory();
         }
         
-        console.log("Cloud Sync: Updated history with", cloudInvoices.length, "items");
+        console.log("Cloud Sync: Synced with", cloudInvoices.length, "items");
     });
 }
 
@@ -542,7 +556,7 @@ function formatDate(dateStr) {
 }
 
 async function saveInvoice() {
-    const existingIndex = invoiceHistory.findIndex(inv => inv.invoiceNo == currentInvoice.invoiceNo);
+    const existingIndex = invoiceHistory.findIndex(inv => inv.id === currentInvoice.id);
 
     if (existingIndex > -1) {
         invoiceHistory[existingIndex] = { ...currentInvoice };
@@ -557,7 +571,10 @@ async function saveInvoice() {
 
     localStorage.setItem('invoiceHistory', JSON.stringify(invoiceHistory));
     
-    // Cloud Sync: Push to Firestore
+    // Update UI IMMEDIATELY for better "Rich" experience
+    renderHistory();
+
+    // Cloud Sync: Push to Firestore in background
     if (isSynced && storeId) {
         try {
             const syncData = { 
@@ -565,7 +582,7 @@ async function saveInvoice() {
                 storeId: storeId,
                 lastUpdated: Date.now()
             };
-            // Use setDoc with a unique document ID (storeId_invoiceNo) to avoid duplicates
+            // Use setDoc with a unique document ID
             await setDoc(doc(db, "invoices", `${storeId}_${currentInvoice.id}`), syncData);
             console.log("Cloud Sync: Invoice pushed to cloud");
         } catch (error) {
@@ -573,7 +590,6 @@ async function saveInvoice() {
         }
     }
 
-    renderHistory();
     alert(isSynced ? 'Invoice saved and synced to cloud!' : 'Invoice saved locally!');
 }
 
