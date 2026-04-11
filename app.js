@@ -218,17 +218,21 @@ function setupEventListeners() {
             appContainer.classList.toggle('sidebar-collapsed');
             // Update icons if necessary
             setTimeout(updatePreviewScale, 400); // Re-scale preview after sidebar animation
-            // Connect Sync Button
-    document.getElementById('connect-sync-btn').addEventListener('click', () => {
-        const id = document.getElementById('sync-id').value.trim();
-        if (id) {
-            connectCloudSync(id);
-            alert(`Connected! All invoices saved on this device with ID "${id}" will now sync with your other devices.`);
-        } else {
-            alert('Please enter a Store ID first.');
-        }
-    });
-});
+        });
+    }
+
+    // Connect Sync Button
+    const connectBtn = document.getElementById('connect-sync-btn');
+    if (connectBtn) {
+        connectBtn.addEventListener('click', () => {
+            const id = document.getElementById('sync-id').value.trim();
+            if (id) {
+                connectCloudSync(id);
+                alert(`Connected! All invoices with ID "${id}" will now sync across your devices.`);
+            } else {
+                alert('Please enter a Store ID first.');
+            }
+        });
     }
 
     // Tab Switching Logic
