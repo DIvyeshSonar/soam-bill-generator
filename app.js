@@ -1,22 +1,4 @@
-import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
-import { getFirestore, collection, onSnapshot, doc, setDoc, deleteDoc, query, where } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
-
-// Firebase configuration (Placeholder - User will replace with their own in Settings)
-const firebaseConfig = {
-    apiKey: "AIzaSyAs-DEMO-KEY-REPLACE-IN-CONSOLE",
-    authDomain: "soam-bill-generator.firebaseapp.com",
-    projectId: "soam-bill-generator",
-    storageBucket: "soam-bill-generator.appspot.com",
-    messagingSenderId: "1234567890",
-    appId: "1:1234567890:web:abcdef"
-};
-
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-
 // State management
-let isSynced = false;
-let storeId = localStorage.getItem('storeSyncId') || '';
 let currentInvoice = {
     id: Date.now(),
     invoiceNo: "",
@@ -85,58 +67,9 @@ function initApp() {
     // Bind Event Listeners
     setupEventListeners();
 
-    // Initial sync check
-    if (storeId) {
-        document.getElementById('sync-id').value = storeId;
-        connectCloudSync(storeId);
-    }
-
     // Initial preview refresh & scale
     updatePreview();
     updatePreviewScale();
-}
-
-async function connectCloudSync(id) {
-    if (!id) return;
-    
-    storeId = id;
-    localStorage.setItem('storeSyncId', id);
-    isSynced = true;
-    
-    const statusEl = document.getElementById('sync-status');
-    statusEl.innerHTML = `Status: <span style="color: #10b981; font-weight: 700;">Connected to Cloud (${id})</span>`;
-    
-    // Migration: If we already have local history, upload it to cloud so it shows on laptop
-    if (invoiceHistory.length > 0) {
-        console.log("Cloud Sync: Migrating local history to Cloud...");
-        for (const inv of invoiceHistory) {
-            try {
-                const syncData = { ...inv, storeId: id, lastUpdated: Date.now() };
-                await setDoc(doc(db, "invoices", `${id}_${inv.id}`), syncData);
-            } catch (err) { console.error("Migration error:", err); }
-        }
-    }
-
-    // Start listening for real-time updates
-    const q = query(collection(db, "invoices"), where("storeId", "==", storeId));
-    onSnapshot(q, (snapshot) => {
-        const cloudInvoices = [];
-        snapshot.forEach((doc) => {
-            const data = doc.data();
-            // Basic data validation
-            if (data && data.id) cloudInvoices.push(data);
-        });
-        
-        // Only update if cloud has content (prevents clearing local list if cloud is slow)
-        if (cloudInvoices.length > 0) {
-            // Sort by ID (descending)
-            invoiceHistory = cloudInvoices.sort((a, b) => b.id - a.id);
-            localStorage.setItem('invoiceHistory', JSON.stringify(invoiceHistory));
-            renderHistory();
-        }
-        
-        console.log("Cloud Sync: Synced with", cloudInvoices.length, "items");
-    });
 }
 
 function setupEventListeners() {
@@ -232,20 +165,6 @@ function setupEventListeners() {
             appContainer.classList.toggle('sidebar-collapsed');
             // Update icons if necessary
             setTimeout(updatePreviewScale, 400); // Re-scale preview after sidebar animation
-        });
-    }
-
-    // Connect Sync Button
-    const connectBtn = document.getElementById('connect-sync-btn');
-    if (connectBtn) {
-        connectBtn.addEventListener('click', () => {
-            const id = document.getElementById('sync-id').value.trim();
-            if (id) {
-                connectCloudSync(id);
-                alert(`Connected! All invoices with ID "${id}" will now sync across your devices.`);
-            } else {
-                alert('Please enter a Store ID first.');
-            }
         });
     }
 
@@ -555,7 +474,7 @@ function formatDate(dateStr) {
     return `${day}-${month}-${year}`;
 }
 
-async function saveInvoice() {
+function saveInvoice() {
     const existingIndex = invoiceHistory.findIndex(inv => inv.id === currentInvoice.id);
 
     if (existingIndex > -1) {
@@ -570,27 +489,8 @@ async function saveInvoice() {
     }
 
     localStorage.setItem('invoiceHistory', JSON.stringify(invoiceHistory));
-    
-    // Update UI IMMEDIATELY for better "Rich" experience
     renderHistory();
-
-    // Cloud Sync: Push to Firestore in background
-    if (isSynced && storeId) {
-        try {
-            const syncData = { 
-                ...currentInvoice, 
-                storeId: storeId,
-                lastUpdated: Date.now()
-            };
-            // Use setDoc with a unique document ID
-            await setDoc(doc(db, "invoices", `${storeId}_${currentInvoice.id}`), syncData);
-            console.log("Cloud Sync: Invoice pushed to cloud");
-        } catch (error) {
-            console.error("Cloud Sync Error:", error);
-        }
-    }
-
-    alert(isSynced ? 'Invoice saved and synced to cloud!' : 'Invoice saved locally!');
+    alert('Invoice saved locally!');
 }
 
 function renderHistory() {
@@ -600,13 +500,13 @@ function renderHistory() {
     }
 
     historyList.innerHTML = invoiceHistory.map(inv => `
-        <div class="history-item" onclick="window.loadInvoice(${inv.id})">
+        <div class="history-item" onclick="loadInvoice(${inv.id})">
             <div style="flex: 1; overflow: hidden;">
                 <div class="inv-no">#${inv.invoiceNo}</div>
                 <div class="inv-customer">${inv.customerName || 'Walking Customer'}</div>
                 <div class="inv-meta">${formatDate(inv.date)} • ${formatCurrency(inv.total)}</div>
             </div>
-            <button class="delete-inv-btn" onclick="event.stopPropagation(); window.deleteInvoice(${inv.id})">
+            <button class="delete-inv-btn" onclick="event.stopPropagation(); deleteInvoice(${inv.id})">
                 <i data-lucide="trash-2" style="width: 14px; height: 14px;"></i>
             </button>
         </div>
@@ -615,18 +515,8 @@ function renderHistory() {
     lucide.createIcons();
 }
 
-window.deleteInvoice = async function (id) {
+function deleteInvoice(id) {
     if (confirm('Are you sure you want to delete this invoice?')) {
-        // Cloud Sync: Delete from Firestore
-        if (isSynced && storeId) {
-            try {
-                await deleteDoc(doc(db, "invoices", `${storeId}_${id}`));
-                console.log("Cloud Sync: Invoice deleted from cloud");
-            } catch (error) {
-                console.error("Cloud Sync Delete Error:", error);
-            }
-        }
-
         invoiceHistory = invoiceHistory.filter(inv => inv.id !== id);
         localStorage.setItem('invoiceHistory', JSON.stringify(invoiceHistory));
         renderHistory();
@@ -634,9 +524,9 @@ window.deleteInvoice = async function (id) {
             resetForm();
         }
     }
-};
+}
 
-window.loadInvoice = function (id) {
+function loadInvoice(id) {
     const inv = invoiceHistory.find(i => i.id === id);
     if (!inv) return;
 
@@ -660,17 +550,7 @@ window.loadInvoice = function (id) {
     }
 
     updatePreview();
-};
-
-window.saveInvoice = saveInvoice;
-window.resetForm = resetForm;
-window.updatePreview = updatePreview;
-window.removeItem = function(btn) {
-    btn.closest('.item-entry-card').remove();
-    updatePreview();
-    renderHistory();
-};
-window.updatePreviewScale = updatePreviewScale;
+}
 
 function resetForm() {
     currentInvoice = {

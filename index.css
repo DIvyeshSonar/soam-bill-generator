@@ -116,41 +116,6 @@ h1, h2, h3, .logo-icon {
     box-shadow: var(--shadow-sm);
 }
 
-/* Cloud Sync Styles */
-.sync-status-indicator {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 12px;
-    font-weight: 600;
-    color: var(--text-muted);
-    padding: 6px 12px;
-    border-radius: 20px;
-    background: #f1f5f9;
-    border: 1px solid var(--border);
-}
-
-.sync-status-indicator.connected {
-    color: #059669;
-    background: #ecfdf5;
-    border-color: #10b981;
-}
-
-.sync-status-indicator i {
-    width: 14px;
-    height: 14px;
-}
-
-.sync-status-indicator.syncing i {
-    animation: pulse 1.5s infinite;
-}
-
-@keyframes pulse {
-    0% { opacity: 1; }
-    50% { opacity: 0.4; }
-    100% { opacity: 1; }
-}
-
 .toggle-btn i {
     transition: transform 0.3s ease;
 }
