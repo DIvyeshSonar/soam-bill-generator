@@ -319,8 +319,8 @@ function renderPreview(data) {
     const preview = document.getElementById('invoice-preview');
     const { invoiceNo, date, customerName, customerEmail, items, subtotal, cgst, sgst, total, terms } = data;
 
-    // Smart Spacing: Apply compact mode if items are many (e.g., > 6)
-    if (items.length > 6) {
+    // Smart Spacing: Apply compact mode if items are many (e.g., > 10)
+    if (items.length > 10) {
         preview.classList.add('compact-mode');
     } else {
         preview.classList.remove('compact-mode');
@@ -431,7 +431,7 @@ function renderPreview(data) {
                 </div>
                 <div style="margin-top: 40px; text-align: center;">
                     <p style="font-weight: 700; margin-bottom: 5px;">For: ${companySettings.name}</p>
-                    <div style="height: 100px; display: flex; align-items: center; justify-content: center; margin-bottom: 5px;">
+                    <div style="height: 60px; display: flex; align-items: center; justify-content: center; margin-bottom: 5px;">
                         ${companySettings.signature ? `<img src="${companySettings.signature}" style="max-height: 100%; max-width: 250px; object-fit: contain;">` : ''}
                     </div>
                     <div style="width: 180px; border-top: 2px solid #333; margin: 0 auto;"></div>
