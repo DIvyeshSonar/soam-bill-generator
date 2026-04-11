@@ -664,6 +664,13 @@ window.loadInvoice = function (id) {
 
 window.saveInvoice = saveInvoice;
 window.resetForm = resetForm;
+window.updatePreview = updatePreview;
+window.removeItem = function(btn) {
+    btn.closest('.item-entry-card').remove();
+    updatePreview();
+    renderHistory();
+};
+window.updatePreviewScale = updatePreviewScale;
 
 function resetForm() {
     currentInvoice = {
