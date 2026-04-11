@@ -1,4 +1,22 @@
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+import { getFirestore, collection, onSnapshot, doc, setDoc, deleteDoc, query, where } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+
+// Firebase configuration (Placeholder - User will replace with their own in Settings)
+const firebaseConfig = {
+    apiKey: "AIzaSyAs-DEMO-KEY-REPLACE-IN-CONSOLE",
+    authDomain: "soam-bill-generator.firebaseapp.com",
+    projectId: "soam-bill-generator",
+    storageBucket: "soam-bill-generator.appspot.com",
+    messagingSenderId: "1234567890",
+    appId: "1:1234567890:web:abcdef"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
 // State management
+let isSynced = false;
+let storeId = localStorage.getItem('storeSyncId') || '';
 let currentInvoice = {
     id: Date.now(),
     invoiceNo: "",
@@ -67,9 +85,44 @@ function initApp() {
     // Bind Event Listeners
     setupEventListeners();
 
+    // Initial sync check
+    if (storeId) {
+        document.getElementById('sync-id').value = storeId;
+        connectCloudSync(storeId);
+    }
+
     // Initial preview refresh & scale
     updatePreview();
     updatePreviewScale();
+}
+
+async function connectCloudSync(id) {
+    if (!id) return;
+    
+    storeId = id;
+    localStorage.setItem('storeSyncId', id);
+    isSynced = true;
+    
+    const statusEl = document.getElementById('sync-status');
+    statusEl.innerHTML = `Status: <span style="color: #10b981; font-weight: 700;">Connected to Cloud (${id})</span>`;
+    
+    // Start listening for real-time updates
+    const q = query(collection(db, "invoices"), where("storeId", "==", storeId));
+    onSnapshot(q, (snapshot) => {
+        const cloudInvoices = [];
+        snapshot.forEach((doc) => {
+            cloudInvoices.push(doc.data());
+        });
+        
+        // Merge cloud data with local if needed, prioritizing cloud
+        if (cloudInvoices.length > 0) {
+            invoiceHistory = cloudInvoices.sort((a, b) => b.id - a.id);
+            localStorage.setItem('invoiceHistory', JSON.stringify(invoiceHistory));
+            renderHistory();
+        }
+        
+        console.log("Cloud Sync: Updated history with", cloudInvoices.length, "items");
+    });
 }
 
 function setupEventListeners() {
@@ -165,7 +218,17 @@ function setupEventListeners() {
             appContainer.classList.toggle('sidebar-collapsed');
             // Update icons if necessary
             setTimeout(updatePreviewScale, 400); // Re-scale preview after sidebar animation
-        });
+            // Connect Sync Button
+    document.getElementById('connect-sync-btn').addEventListener('click', () => {
+        const id = document.getElementById('sync-id').value.trim();
+        if (id) {
+            connectCloudSync(id);
+            alert(`Connected! All invoices saved on this device with ID "${id}" will now sync with your other devices.`);
+        } else {
+            alert('Please enter a Store ID first.');
+        }
+    });
+});
     }
 
     // Tab Switching Logic
@@ -474,7 +537,7 @@ function formatDate(dateStr) {
     return `${day}-${month}-${year}`;
 }
 
-function saveInvoice() {
+async function saveInvoice() {
     const existingIndex = invoiceHistory.findIndex(inv => inv.invoiceNo == currentInvoice.invoiceNo);
 
     if (existingIndex > -1) {
@@ -489,8 +552,25 @@ function saveInvoice() {
     }
 
     localStorage.setItem('invoiceHistory', JSON.stringify(invoiceHistory));
+    
+    // Cloud Sync: Push to Firestore
+    if (isSynced && storeId) {
+        try {
+            const syncData = { 
+                ...currentInvoice, 
+                storeId: storeId,
+                lastUpdated: Date.now()
+            };
+            // Use setDoc with a unique document ID (storeId_invoiceNo) to avoid duplicates
+            await setDoc(doc(db, "invoices", `${storeId}_${currentInvoice.id}`), syncData);
+            console.log("Cloud Sync: Invoice pushed to cloud");
+        } catch (error) {
+            console.error("Cloud Sync Error:", error);
+        }
+    }
+
     renderHistory();
-    alert('Invoice saved successfully!');
+    alert(isSynced ? 'Invoice saved and synced to cloud!' : 'Invoice saved locally!');
 }
 
 function renderHistory() {
@@ -500,13 +580,13 @@ function renderHistory() {
     }
 
     historyList.innerHTML = invoiceHistory.map(inv => `
-        <div class="history-item" onclick="loadInvoice(${inv.id})">
+        <div class="history-item" onclick="window.loadInvoice(${inv.id})">
             <div style="flex: 1; overflow: hidden;">
                 <div class="inv-no">#${inv.invoiceNo}</div>
                 <div class="inv-customer">${inv.customerName || 'Walking Customer'}</div>
                 <div class="inv-meta">${formatDate(inv.date)} • ${formatCurrency(inv.total)}</div>
             </div>
-            <button class="delete-inv-btn" onclick="event.stopPropagation(); deleteInvoice(${inv.id})">
+            <button class="delete-inv-btn" onclick="event.stopPropagation(); window.deleteInvoice(${inv.id})">
                 <i data-lucide="trash-2" style="width: 14px; height: 14px;"></i>
             </button>
         </div>
@@ -515,8 +595,18 @@ function renderHistory() {
     lucide.createIcons();
 }
 
-window.deleteInvoice = function (id) {
+window.deleteInvoice = async function (id) {
     if (confirm('Are you sure you want to delete this invoice?')) {
+        // Cloud Sync: Delete from Firestore
+        if (isSynced && storeId) {
+            try {
+                await deleteDoc(doc(db, "invoices", `${storeId}_${id}`));
+                console.log("Cloud Sync: Invoice deleted from cloud");
+            } catch (error) {
+                console.error("Cloud Sync Delete Error:", error);
+            }
+        }
+
         invoiceHistory = invoiceHistory.filter(inv => inv.id !== id);
         localStorage.setItem('invoiceHistory', JSON.stringify(invoiceHistory));
         renderHistory();
@@ -533,7 +623,7 @@ window.loadInvoice = function (id) {
     currentInvoice = { ...inv };
 
     document.getElementById('customer-name').value = inv.customerName;
-    document.getElementById('customer-email').value = inv.customerEmail;
+    document.getElementById('customer-email').value = inv.customerEmail || '';
     document.getElementById('invoice-no').value = inv.invoiceNo;
     document.getElementById('invoice-date').value = inv.date;
     document.getElementById('invoice-terms').value = inv.terms;
@@ -543,6 +633,17 @@ window.loadInvoice = function (id) {
     document.getElementById('sgst-rate').value = inv.sgstRate || 9;
 
     itemsContainer.innerHTML = '';
+    if (inv.items && inv.items.length > 0) {
+        inv.items.forEach(item => addItemRow(item));
+    } else {
+        addItemRow();
+    }
+
+    updatePreview();
+};
+
+window.saveInvoice = saveInvoice;
+window.resetForm = resetForm;
     if (inv.items && inv.items.length > 0) {
         inv.items.forEach(item => addItemRow(item));
     } else {

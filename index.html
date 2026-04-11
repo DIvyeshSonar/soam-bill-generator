@@ -12,6 +12,8 @@
     <!-- Lucide Icons for modern UI -->
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚡</text></svg>">
     <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Firebase SDK (Modular) -->
+    <script type="module" src="app.js"></script>
 </head>
 <body>
     <!-- Landing Page Overlay -->
@@ -57,7 +59,24 @@
             </div>
             
             <div id="section-settings" class="settings-section hidden">
-                <h3><i data-lucide="settings"></i> Company Settings</h3>
+                        <div class="settings-section">
+                            <h3><i data-lucide="cloud"></i> Cloud Sync</h3>
+                            <div class="input-group">
+                                <label>Store Sync ID (Enter same ID on all devices)</label>
+                                <div style="display: flex; gap: 8px;">
+                                    <input type="text" id="sync-id" placeholder="e.g. MyStore77" style="flex: 1;">
+                                    <button id="connect-sync-btn" class="accent-btn" style="width: auto; padding: 0 16px;">
+                                        Connect
+                                    </button>
+                                </div>
+                                <p id="sync-status" style="font-size: 11px; margin-top: 4px; color: var(--text-muted);">
+                                    Status: Not Connected (Local Only)
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="settings-section">
+                            <h3><i data-lucide="building"></i> Company Balance</h3>
                 <div class="input-group">
                     <label for="comp-name">Company Name</label>
                     <input type="text" id="comp-name" placeholder="life energy">
