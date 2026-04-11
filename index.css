@@ -970,6 +970,7 @@ input:focus, textarea:focus {
     .main-content {
         grid-template-columns: 1fr;
         overflow-y: auto;
+        height: auto;
     }
     
     .form-section, .preview-section {
@@ -981,6 +982,7 @@ input:focus, textarea:focus {
         border-left: none;
         border-top: 1px solid var(--border);
         padding: 40px 20px;
+        background: #f8fafc;
     }
 
     .invoice-paper-wrapper {
@@ -992,6 +994,7 @@ input:focus, textarea:focus {
 @media screen and (max-width: 768px) {
     .app-container {
         grid-template-columns: 1fr;
+        height: auto;
     }
 
     .sidebar {
@@ -1000,7 +1003,7 @@ input:focus, textarea:focus {
         top: 0;
         bottom: 0;
         width: 280px;
-        z-index: 1001;
+        z-index: 2000;
         transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         box-shadow: 20px 0 50px rgba(0,0,0,0.1);
         background: #ffffff;
@@ -1031,10 +1034,12 @@ input:focus, textarea:focus {
         width: 100%;
         justify-content: center;
         padding: 12px;
+        font-size: 13px;
     }
 
     .form-section {
         padding: 20px 16px;
+        height: auto;
     }
 
     .card {
@@ -1056,6 +1061,7 @@ input:focus, textarea:focus {
     }
 
     .item-row-bottom .input-label-group:nth-child(1) { grid-column: span 2; } /* HSN */
+    .item-row-bottom .input-label-group:nth-child(4) { grid-column: span 1; } /* Price */
     .item-row-bottom .input-label-group:nth-child(5) { grid-column: span 2; } /* Amount */
 
     .totals-grid {
@@ -1075,19 +1081,23 @@ input:focus, textarea:focus {
         padding-top: 24px;
     }
 
+    .preview-section {
+        padding: 20px 10px;
+    }
+
     /* Landing Page Mobile Fixes */
     .landing-title {
-        font-size: 36px;
+        font-size: 32px;
         line-height: 1.2;
     }
 
     .landing-subtitle {
-        font-size: 16px;
+        font-size: 15px;
         margin-bottom: 30px;
     }
 
     .landing-image {
-        max-width: 180px;
+        max-width: 160px;
         margin-bottom: 20px;
     }
 }

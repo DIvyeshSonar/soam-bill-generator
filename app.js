@@ -21,6 +21,7 @@ let invoiceHistory = JSON.parse(localStorage.getItem('invoiceHistory')) || [];
 let companySettings = JSON.parse(localStorage.getItem('companySettings')) || {
     name: "life energy",
     email: "lifeenergy@gmail.com",
+    mobile: "+91 98765 43210",
     signature: "signature.png"
 };
 
@@ -44,6 +45,7 @@ function initApp() {
     // Set company settings
     document.getElementById('comp-name').value = companySettings.name;
     document.getElementById('comp-email').value = companySettings.email;
+    document.getElementById('comp-mobile').value = companySettings.mobile || '';
 
     // Ensure signature is set to permanent path if none exists
     if (!companySettings.signature) {
@@ -116,6 +118,11 @@ function setupEventListeners() {
     });
     document.getElementById('comp-email').addEventListener('input', (e) => {
         companySettings.email = e.target.value;
+        localStorage.setItem('companySettings', JSON.stringify(companySettings));
+        updatePreview();
+    });
+    document.getElementById('comp-mobile').addEventListener('input', (e) => {
+        companySettings.mobile = e.target.value;
         localStorage.setItem('companySettings', JSON.stringify(companySettings));
         updatePreview();
     });
@@ -290,6 +297,7 @@ function renderPreview(data) {
                 <div>
                     <h2 style="font-size: 28px; font-weight: 800; color: #000; font-family: 'Inter'; margin-bottom: 2px;">${companySettings.name}</h2>
                     <p style="color: #000; font-size: 14px; font-weight: 600;">Email: <span style="font-weight: 500;">${companySettings.email}</span></p>
+                    <p style="color: #000; font-size: 14px; font-weight: 600;">Mobile: <span style="font-weight: 500;">${companySettings.mobile || ''}</span></p>
                 </div>
                 <div style="text-align: right;">
                     <h1 style="color: var(--primary); margin: 0; font-family: 'Inter'; font-size: 32px; font-weight: 800; text-transform: uppercase;">Tax Invoice</h1>
