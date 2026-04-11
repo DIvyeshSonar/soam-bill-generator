@@ -25,16 +25,8 @@ let companySettings = JSON.parse(localStorage.getItem('companySettings')) || {
     signature: "signature.png"
 };
 
-// DOM Elements
-const itemsContainer = document.getElementById('items-container');
-const addItemBtn = document.getElementById('add-item-btn');
-const invoicePreview = document.getElementById('invoice-preview');
-const historyList = document.getElementById('invoice-history');
-const saveBtn = document.getElementById('save-invoice-btn');
-const printBtn = document.getElementById('print-bill-btn');
-const newBtn = document.getElementById('new-invoice-btn');
-const getStartedBtn = document.getElementById('get-started-btn');
-const landingPage = document.getElementById('landing-page');
+// DOM Elements (will be initialized in initApp)
+let itemsContainer, addItemBtn, invoicePreview, historyList, saveBtn, printBtn, newBtn, getStartedBtn, landingPage;
 
 // Initial setup
 window.addEventListener('DOMContentLoaded', () => {
@@ -42,6 +34,17 @@ window.addEventListener('DOMContentLoaded', () => {
 });
 
 function initApp() {
+    // Initialize DOM Elements
+    itemsContainer = document.getElementById('items-container');
+    addItemBtn = document.getElementById('add-item-btn');
+    invoicePreview = document.getElementById('invoice-preview');
+    historyList = document.getElementById('invoice-history');
+    saveBtn = document.getElementById('save-invoice-btn');
+    printBtn = document.getElementById('print-bill-btn');
+    newBtn = document.getElementById('new-invoice-btn');
+    getStartedBtn = document.getElementById('get-started-btn');
+    landingPage = document.getElementById('landing-page');
+
     // Set company settings
     document.getElementById('comp-name').value = companySettings.name;
     document.getElementById('comp-email').value = companySettings.email;
