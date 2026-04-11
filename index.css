@@ -651,10 +651,9 @@ input:focus, textarea:focus {
 
 /* Totals Section */
 .totals-grid {
-    display: grid;
-    grid-template-columns: 1fr 340px;
-    gap: 32px;
-    align-items: start;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
     width: 100%;
 }
 
@@ -667,18 +666,13 @@ input:focus, textarea:focus {
     flex-direction: column;
     gap: 16px;
     box-sizing: border-box;
-    max-width: 100%;
-    overflow-x: hidden; /* Only hide overflow here if absolutely necessary */
+    width: 100%;
+    margin-top: 8px; /* Extra space from the top sections */
 }
 
 @media screen and (max-width: 1400px) {
     .totals-grid {
-        grid-template-columns: 1fr;
         gap: 24px;
-    }
-    
-    .calculation-section {
-        max-width: 100%;
     }
 }
 
