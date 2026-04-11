@@ -651,27 +651,33 @@ input:focus, textarea:focus {
 
 /* Totals Section */
 .totals-grid {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 32px;
-    justify-content: space-between;
-    align-items: flex-start;
+    display: grid;
+    grid-template-columns: 1.2fr 1fr;
+    gap: 48px;
+    align-items: start;
+}
+
+@media screen and (max-width: 992px) {
+    .totals-grid {
+        grid-template-columns: 1fr;
+        gap: 32px;
+    }
 }
 
 .advanced-section {
-    flex: 1;
-    min-width: 300px; /* Ensures it doesn't get too thin */
-}
-
-.calculation-section {
-    flex: 0 1 320px;
-    min-width: 280px;
-}
-
-.calculation-section {
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 20px;
+}
+
+.calculation-section {
+    background: #f8fafc;
+    padding: 24px;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
 }
 
 .calc-row {
@@ -679,20 +685,23 @@ input:focus, textarea:focus {
     justify-content: space-between;
     align-items: center;
     font-size: 15px;
-    gap: 12px;
 }
 
-.calc-row span {
-    white-space: nowrap;
+.calc-row span:last-child {
+    font-weight: 600;
 }
 
 .calc-row.highlighted {
-    font-weight: 700;
-    font-size: 20px;
+    font-weight: 800;
+    font-size: 22px;
     color: var(--primary);
     padding-top: 16px;
     margin-top: 4px;
-    border-top: 2.5px solid var(--border);
+    border-top: 2px solid #e2e8f0;
+}
+
+.calc-row.highlighted span:last-child {
+    font-weight: 800;
 }
 
 /* Preview Section styling */
