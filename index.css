@@ -54,30 +54,40 @@ h1, h2, h3, .logo-icon {
     position: sticky;
     top: 0;
     height: 100vh;
+    width: 300px;
+    min-width: 300px;
     transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     z-index: 100;
+    overflow-x: hidden;
 }
 
 .app-container.sidebar-collapsed {
-    grid-template-columns: 0 1fr;
+    grid-template-columns: 0px 1fr;
 }
 
 .app-container.sidebar-collapsed .sidebar {
-    transform: translateX(-100%);
-}
-
-.app-container.sidebar-collapsed .sidebar-header h2,
-.app-container.sidebar-collapsed .sidebar-header .logo-icon {
+    width: 0;
+    min-width: 0;
+    padding: 32px 0;
+    border-right: none;
     opacity: 0;
+    transform: translateX(-100%);
+    pointer-events: none;
 }
 
 /* Floating toggle when sidebar is collapsed */
 .app-container.sidebar-collapsed #toggle-sidebar-btn {
     position: fixed;
     left: 20px;
-    top: 20px;
-    z-index: 200;
+    top: 24px;
+    z-index: 2000;
     transform: rotate(180deg);
+    background: white;
+    box-shadow: var(--shadow-md);
+    padding: 8px;
+    width: 36px;
+    height: 36px;
+    pointer-events: auto;
 }
 
 .sidebar-header {
