@@ -653,14 +653,15 @@ input:focus, textarea:focus {
 .totals-grid {
     display: grid;
     grid-template-columns: 1.2fr 1fr;
-    gap: 48px;
+    gap: 32px;
     align-items: start;
+    width: 100%;
 }
 
-@media screen and (max-width: 992px) {
+@media screen and (max-width: 1200px) {
     .totals-grid {
         grid-template-columns: 1fr;
-        gap: 32px;
+        gap: 24px;
     }
 }
 
@@ -685,6 +686,11 @@ input:focus, textarea:focus {
     justify-content: space-between;
     align-items: center;
     font-size: 15px;
+    width: 100%;
+}
+
+.calc-row span {
+    white-space: nowrap;
 }
 
 .calc-row span:last-child {
