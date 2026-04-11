@@ -644,14 +644,6 @@ window.loadInvoice = function (id) {
 
 window.saveInvoice = saveInvoice;
 window.resetForm = resetForm;
-    if (inv.items && inv.items.length > 0) {
-        inv.items.forEach(item => addItemRow(item));
-    } else {
-        addItemRow();
-    }
-
-    updatePreview();
-};
 
 function resetForm() {
     currentInvoice = {
