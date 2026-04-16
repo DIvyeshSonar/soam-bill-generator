@@ -226,7 +226,13 @@ function setupEventListeners() {
 
 
     saveBtn.addEventListener('click', saveInvoice);
-    printBtn.addEventListener('click', () => window.print());
+    printBtn.addEventListener('click', () => {
+        const originalTitle = document.title;
+        const customerName = currentInvoice.customerName ? currentInvoice.customerName.replace(/[^a-z0-9]/gi, '_') : 'Customer';
+        document.title = `Invoice_${currentInvoice.invoiceNo}_${customerName}`;
+        window.print();
+        document.title = originalTitle;
+    });
     newBtn.addEventListener('click', resetForm);
 
     if (getStartedBtn && landingPage) {
