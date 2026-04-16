@@ -229,7 +229,7 @@ function setupEventListeners() {
     printBtn.addEventListener('click', () => {
         const originalTitle = document.title;
         const customerName = currentInvoice.customerName ? currentInvoice.customerName.replace(/[^a-z0-9]/gi, '_') : 'Customer';
-        document.title = `Invoice_${currentInvoice.invoiceNo}_${customerName}`;
+        document.title = `Invoice_${currentInvoice.invoiceNo}_${customerName}_Soam_Lights`;
         window.print();
         document.title = originalTitle;
     });
