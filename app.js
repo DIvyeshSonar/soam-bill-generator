@@ -140,25 +140,41 @@ async function syncAll() {
     // 2. Sync Invoices
     const cloudInvoices = await apiRequest(API_ENDPOINTS.invoices, 'GET');
     if (cloudInvoices) {
-        // Merge cloud with local (Cloud takes precedence for simple conflict resolution)
-        const localIds = new Set(invoiceHistory.map(inv => inv.id));
-        cloudInvoices.forEach(cloudInv => {
-            const localIdx = invoiceHistory.findIndex(inv => inv.id === cloudInv.id);
-            if (localIdx > -1) {
-                invoiceHistory[localIdx] = cloudInv;
-            } else {
-                invoiceHistory.push(cloudInv);
-            }
-        });
-        
-        // Push any local invoices that aren't in cloud
         const cloudIds = new Set(cloudInvoices.map(inv => inv.id));
+        const newLocalHistory = [];
+
+        // Identify what to keep from local history
         for (const localInv of invoiceHistory) {
-            if (!cloudIds.has(localInv.id)) {
-                await apiRequest(API_ENDPOINTS.invoices, 'POST', localInv);
+            const existsInCloud = cloudIds.has(localInv.id);
+
+            if (localInv.synced && !existsInCloud) {
+                // If marks as synced but missing from cloud, it was deleted elsewhere.
+                // SKIP/REMOVE this from local history.
+                continue;
             }
+
+            if (!localInv.synced && !existsInCloud) {
+                // If NOT synced and missing from cloud, it's a new offline bill.
+                // PUSH to cloud.
+                await apiRequest(API_ENDPOINTS.invoices, 'POST', localInv);
+                localInv.synced = true;
+            }
+
+            newLocalHistory.push(localInv);
         }
 
+        // Add/Update from cloud invoices
+        cloudInvoices.forEach(cloudInv => {
+            const localIdx = newLocalHistory.findIndex(inv => inv.id === cloudInv.id);
+            const cloudInvWithFlag = { ...cloudInv, synced: true };
+            if (localIdx > -1) {
+                newLocalHistory[localIdx] = cloudInvWithFlag;
+            } else {
+                newLocalHistory.push(cloudInvWithFlag);
+            }
+        });
+
+        invoiceHistory = newLocalHistory;
         invoiceHistory.sort((a, b) => b.id - a.id);
         localStorage.setItem('invoiceHistory', JSON.stringify(invoiceHistory));
         renderHistory();
@@ -597,7 +613,15 @@ function saveInvoice() {
     if (syncKey) {
         updateSyncStatus(false);
         apiRequest(API_ENDPOINTS.invoices, 'POST', currentInvoice).then(res => {
-            if (res) updateSyncStatus(true);
+            if (res) {
+                updateSyncStatus(true);
+                // Mark as synced locally
+                const invIdx = invoiceHistory.findIndex(inv => inv.id === currentInvoice.id);
+                if (invIdx > -1) {
+                    invoiceHistory[invIdx].synced = true;
+                    localStorage.setItem('invoiceHistory', JSON.stringify(invoiceHistory));
+                }
+            }
         });
     }
     
