@@ -24,6 +24,45 @@ let companySettings = JSON.parse(localStorage.getItem('companySettings')) || {
     mobile: "+91 98765 43210",
     signature: "signature.png"
 };
+const syncKey = 'soam-owner';
+
+const API_ENDPOINTS = {
+    invoices: '/api/invoices',
+    settings: '/api/settings'
+};
+
+async function apiRequest(endpoint, method = 'GET', data = null) {
+    if (!syncKey) return null;
+    try {
+        const options = {
+            method,
+            headers: {
+                'Content-Type': 'application/json',
+                'x-sync-key': syncKey
+            }
+        };
+        if (data) options.body = JSON.stringify(data);
+        const response = await fetch(endpoint, options);
+        if (!response.ok) throw new Error(`API Error: ${response.statusText}`);
+        return await response.json();
+    } catch (err) {
+        console.error('Cloud Sync Error:', err);
+        updateSyncStatus(false);
+        return null;
+    }
+}
+
+function updateSyncStatus(isOnline) {
+    const statusEl = document.getElementById('sync-status');
+    if (!statusEl) return;
+    if (syncKey && isOnline) {
+        statusEl.textContent = 'Synced';
+        statusEl.className = 'sync-status online';
+    } else {
+        statusEl.textContent = syncKey ? 'Error' : 'Offline';
+        statusEl.className = 'sync-status offline';
+    }
+}
 
 // DOM Elements (will be initialized in initApp)
 let itemsContainer, addItemBtn, invoicePreview, historyList, saveBtn, printBtn, newBtn, getStartedBtn, landingPage;
@@ -67,12 +106,64 @@ function initApp() {
     // Render initial history
     renderHistory();
 
+
+    // Initial Sync
+    if (syncKey) {
+        syncAll();
+    }
+
     // Bind Event Listeners
     setupEventListeners();
 
     // Initial preview refresh & scale
     updatePreview();
     updatePreviewScale();
+}
+
+async function syncAll() {
+    updateSyncStatus(false);
+    
+    // 1. Sync Settings
+    const cloudSettings = await apiRequest(API_ENDPOINTS.settings, 'GET');
+    if (cloudSettings) {
+        companySettings = { ...companySettings, ...cloudSettings };
+        localStorage.setItem('companySettings', JSON.stringify(companySettings));
+        // Update UI
+        document.getElementById('comp-name').value = companySettings.name;
+        document.getElementById('comp-email').value = companySettings.email;
+        document.getElementById('comp-mobile').value = companySettings.mobile || '';
+    } else if (syncKey) {
+        // Push local settings to cloud if not exists
+        await apiRequest(API_ENDPOINTS.settings, 'POST', companySettings);
+    }
+
+    // 2. Sync Invoices
+    const cloudInvoices = await apiRequest(API_ENDPOINTS.invoices, 'GET');
+    if (cloudInvoices) {
+        // Merge cloud with local (Cloud takes precedence for simple conflict resolution)
+        const localIds = new Set(invoiceHistory.map(inv => inv.id));
+        cloudInvoices.forEach(cloudInv => {
+            const localIdx = invoiceHistory.findIndex(inv => inv.id === cloudInv.id);
+            if (localIdx > -1) {
+                invoiceHistory[localIdx] = cloudInv;
+            } else {
+                invoiceHistory.push(cloudInv);
+            }
+        });
+        
+        // Push any local invoices that aren't in cloud
+        const cloudIds = new Set(cloudInvoices.map(inv => inv.id));
+        for (const localInv of invoiceHistory) {
+            if (!cloudIds.has(localInv.id)) {
+                await apiRequest(API_ENDPOINTS.invoices, 'POST', localInv);
+            }
+        }
+
+        invoiceHistory.sort((a, b) => b.id - a.id);
+        localStorage.setItem('invoiceHistory', JSON.stringify(invoiceHistory));
+        renderHistory();
+        updateSyncStatus(true);
+    }
 }
 
 function setupEventListeners() {
@@ -118,16 +209,19 @@ function setupEventListeners() {
         companySettings.name = e.target.value;
         localStorage.setItem('companySettings', JSON.stringify(companySettings));
         updatePreview();
+        if (syncKey) apiRequest(API_ENDPOINTS.settings, 'POST', companySettings);
     });
     document.getElementById('comp-email').addEventListener('input', (e) => {
         companySettings.email = e.target.value;
         localStorage.setItem('companySettings', JSON.stringify(companySettings));
         updatePreview();
+        if (syncKey) apiRequest(API_ENDPOINTS.settings, 'POST', companySettings);
     });
-    document.getElementById('comp-mobile').addEventListener('input', (e) => {
+    document.getElementById('comp-mobile').addEventListener('input', async (e) => {
         companySettings.mobile = e.target.value;
         localStorage.setItem('companySettings', JSON.stringify(companySettings));
         updatePreview();
+        if (syncKey) apiRequest(API_ENDPOINTS.settings, 'POST', companySettings);
     });
 
 
@@ -493,7 +587,15 @@ function saveInvoice() {
 
     localStorage.setItem('invoiceHistory', JSON.stringify(invoiceHistory));
     renderHistory();
-    alert('Invoice saved locally!');
+    
+    if (syncKey) {
+        updateSyncStatus(false);
+        apiRequest(API_ENDPOINTS.invoices, 'POST', currentInvoice).then(res => {
+            if (res) updateSyncStatus(true);
+        });
+    }
+    
+    alert('Invoice saved ' + (syncKey ? 'to Cloud!' : 'locally!'));
 }
 
 function renderHistory() {
@@ -523,6 +625,13 @@ function deleteInvoice(id) {
         invoiceHistory = invoiceHistory.filter(inv => inv.id !== id);
         localStorage.setItem('invoiceHistory', JSON.stringify(invoiceHistory));
         renderHistory();
+        
+        if (syncKey) {
+            apiRequest(`${API_ENDPOINTS.invoices}?id=${id}`, 'DELETE').then(res => {
+                if (res) updateSyncStatus(true);
+            });
+        }
+
         if (currentInvoice.id === id) {
             resetForm();
         }
