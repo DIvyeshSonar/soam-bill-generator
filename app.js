@@ -7,8 +7,8 @@ let currentInvoice = {
     customerEmail: "",
     items: [],
     subtotal: 0,
-    cgstRate: 9,
-    sgstRate: 9,
+    cgstRate: 0,
+    sgstRate: 0,
     cgst: 0,
     sgst: 0,
     total: 0,
@@ -96,7 +96,7 @@ function initApp() {
     }
 
     // Generate Invoice No
-    const lastNo = invoiceHistory.length > 0 ? Math.max(...invoiceHistory.map(inv => parseInt(inv.invoiceNo) || 0)) : 1851;
+    const lastNo = invoiceHistory.length > 0 ? Math.max(...invoiceHistory.map(inv => parseInt(inv.invoiceNo) || 0)) : 0;
     currentInvoice.invoiceNo = lastNo + 1;
     document.getElementById('invoice-no').value = currentInvoice.invoiceNo;
 
@@ -703,8 +703,8 @@ function resetForm() {
         customerEmail: "",
         items: [],
         subtotal: 0,
-        cgstRate: 9,
-        sgstRate: 9,
+        cgstRate: 0,
+        sgstRate: 0,
         cgst: 0,
         sgst: 0,
         total: 0,
@@ -720,8 +720,8 @@ function resetForm() {
     document.getElementById('invoice-terms').value = currentInvoice.terms;
     document.getElementById('received-amount').value = 0;
     document.getElementById('prev-balance').value = 0;
-    document.getElementById('cgst-rate').value = 9;
-    document.getElementById('sgst-rate').value = 9;
+    document.getElementById('cgst-rate').value = 0;
+    document.getElementById('sgst-rate').value = 0;
 
     itemsContainer.innerHTML = '';
     addItemRow();
