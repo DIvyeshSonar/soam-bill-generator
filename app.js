@@ -602,9 +602,9 @@ function saveInvoice() {
         invoiceHistory.unshift({ ...currentInvoice });
     }
 
-    // Increased Limit to 100
-    if (invoiceHistory.length > 100) {
-        invoiceHistory = invoiceHistory.slice(0, 100);
+    // Increased Limit to 5000 to prevent old bills from disappearing
+    if (invoiceHistory.length > 5000) {
+        invoiceHistory = invoiceHistory.slice(0, 5000);
     }
 
     localStorage.setItem('invoiceHistory', JSON.stringify(invoiceHistory));
